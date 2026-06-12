@@ -1,2 +1,67 @@
 HTML
-<h1>Mi Servidor de Imágenes</h1>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Austral Group | CDN de Imágenes</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="flex flex-col min-h-screen justify-between bg-slate-950 text-slate-100 font-sans antialiased selection:bg-blue-500 selection:text-white">
+
+    <main class="flex-grow flex flex-col items-center justify-center px-4 py-16 text-center">
+        
+        <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-emerald-500/10 text-emerald-400 text-xs font-medium border border-emerald-500/20 mb-8 animate-pulse">
+            <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+            Servidor Activo & Optimizado
+        </div>
+
+        <div class="mb-6">
+            <img src="logo.webp" alt="Austral Group Logo" class="h-24 mx-auto object-contain drop-shadow-[0_0_25px_rgba(59,130,246,0.4)]">
+        </div>
+
+        <h1 class="text-4xl md:text-5xl font-black tracking-tight bg-gradient-to-r from-blue-400 via-indigo-400 to-purple-500 bg-clip-text text-transparent mb-4">
+            Austral Group
+        </h1>
+        
+        <p class="text-slate-400 text-base md:text-lg max-w-md mx-auto mb-12 font-light">
+            Almacenamiento y distribución global de archivos visuales de alta velocidad.
+        </p>
+
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-6 max-w-3xl w-full text-left">
+            
+            <div class="p-6 rounded-2xl bg-slate-900/50 border border-slate-800 backdrop-blur-sm hover:border-blue-500/40 transition-all duration-300 group">
+                <div class="w-10 h-10 rounded-xl bg-blue-500/10 flex items-center justify-center text-blue-400 mb-4 group-hover:scale-110 transition-transform">
+                    <i class="fa-solid fa-bolt text-lg"></i>
+                </div>
+                <h3 class="text-white font-semibold mb-1">Carga Inmediata</h3>
+                <p class="text-slate-400 text-sm">Contenido distribuido globalmente mediante la red CDN de Cloudflare.</p>
+            </div>
+
+            <div class="p-6 rounded-2xl bg-slate-900/50 border border-slate-800 backdrop-blur-sm hover:border-indigo-500/40 transition-all duration-300 group">
+                <div class="w-10 h-10 rounded-xl bg-indigo-500/10 flex items-center justify-center text-indigo-400 mb-4 group-hover:scale-110 transition-transform">
+                    <i class="fa-solid fa-wand-magic-sparkles text-lg"></i>
+                </div>
+                <h3 class="text-white font-semibold mb-1">Optimización WebP</h3>
+                <p class="text-slate-400 text-sm">Compresión de última generación para reducir el peso sin perder calidad.</p>
+            </div>
+
+            <div class="p-6 rounded-2xl bg-slate-900/50 border border-slate-800 backdrop-blur-sm hover:border-purple-500/40 transition-all duration-300 group">
+                <div class="w-10 h-10 rounded-xl bg-purple-500/10 flex items-center justify-center text-purple-400 mb-4 group-hover:scale-110 transition-transform">
+                    <i class="fa-solid fa-link text-lg"></i>
+                </div>
+                <h3 class="text-white font-semibold mb-1">Enlaces Directos</h3>
+                <p class="text-slate-400 text-sm">URLs permanentes e ideales para catálogos, webs o integraciones.</p>
+            </div>
+            
+        </div>
+
+    </main>
+
+    <footer class="w-full text-center py-6 border-t border-slate-900 text-slate-600 text-xs tracking-wider">
+        &copy; 2026 Austral Group. Infraestructura Privada.
+    </footer>
+
+</body>
+</html>
