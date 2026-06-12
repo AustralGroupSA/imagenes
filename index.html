@@ -7,7 +7,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
-<body class="flex flex-col min-h-screen justify-between bg-slate-950 text-slate-100 font-sans antialiased selection:bg-blue-500 selection:text-white">
+<body class="flex flex-col min-h-screen justify-between bg-black text-slate-100 font-sans antialiased selection:bg-blue-500 selection:text-white">
 
     <main class="flex-grow flex flex-col items-center px-4 py-12 max-w-7xl mx-auto w-full">
         
@@ -15,7 +15,7 @@
             <div class="mb-4">
                 <img src="https://agoragroup.com.ar/assets/logos/logo-agora.png" alt="Austral Group Logo" class="h-20 mx-auto object-contain drop-shadow-[0_0_20px_rgba(59,130,246,0.3)]" onerror="this.style.display='none'">
             </div>
-            
+          
             <p class="text-slate-400 text-sm md:text-base font-light">
                 Infraestructura de almacenamiento estático y optimización global.
             </p>
@@ -71,8 +71,8 @@
     <script>
         // ==========================================
         // ⚠️ REEMPLAZA ESTOS DOS DATOS CON LOS TUYOS:
-        const GITHUB_USER = 'AustralGroupSA';
-        const GITHUB_REPO = 'imagenes';
+        const GITHUB_USER = 'TU_USUARIO_DE_GITHUB';
+        const GITHUB_REPO = 'NOMBRE_DE_TU_REPOSITORIO';
         // ==========================================
 
         const baseUrl = window.location.origin;
@@ -139,10 +139,10 @@
                     card.className = "group relative rounded-xl bg-slate-900/30 border border-slate-900 overflow-hidden hover:border-slate-800 transition-all duration-300 flex flex-col aspect-square";
                     
                     card.innerHTML = `
-                        <div class="w-full h-full bg-slate-950/60 flex items-center justify-center p-2 overflow-hidden">
+                        <div class="w-full h-full bg-black/60 flex items-center justify-center p-2 overflow-hidden">
                             <img src="${imageUrl}" alt="${img.name}" class="max-w-full max-h-full object-contain group-hover:scale-105 transition-transform duration-500" loading="lazy">
                         </div>
-                        <div class="absolute inset-x-0 bottom-0 p-2 bg-gradient-to-t from-slate-950 via-slate-950/90 to-transparent pt-6 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-between gap-2">
+                        <div class="absolute inset-x-0 bottom-0 p-2 bg-gradient-to-t from-black via-black/90 to-transparent pt-6 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-between gap-2">
                             <span class="text-[10px] text-slate-300 truncate font-mono w-full" title="${img.name}">${img.name}</span>
                             <button onclick="copyToClipboard('${imageUrl}', this)" class="p-1.5 rounded-md bg-slate-900 border border-slate-800 text-slate-400 hover:text-white hover:bg-blue-600 hover:border-blue-500 transition-all duration-200 shrink-0 text-[10px]" title="Copiar URL">
                                 <i class="fa-regular fa-copy"></i>
