@@ -3,13 +3,50 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ágora Group | CDN de Imágenes</title>
+    <title>Austral Group | CDN de Imágenes</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+    
+    <style>
+        /* Estilos personalizados para adaptar el carrusel al tema oscuro */
+        .swiper {
+            width: 100%;
+            padding-bottom: 50px !important; /* Espacio para los puntos */
+            padding-left: 10px;
+            padding-right: 10px;
+        }
+        .swiper-slide {
+            height: auto;
+            transition: transform 0.3s ease;
+        }
+        .swiper-button-next, .swiper-button-prev {
+            color: #60a5fa !important; /* Azul Tailwind */
+            background: rgba(15, 23, 42, 0.8);
+            width: 40px !important;
+            height: 40px !important;
+            border-radius: 50%;
+            border: 1px solid #1e293b;
+            backdrop-filter: blur(4px);
+        }
+        .swiper-button-next:after, .swiper-button-prev:after {
+            font-size: 18px !important;
+            font-weight: bold;
+        }
+        .swiper-pagination-bullet {
+            background: #64748b !important;
+            opacity: 0.5;
+        }
+        .swiper-pagination-bullet-active {
+            background: #60a5fa !important;
+            opacity: 1;
+            box-shadow: 0 0 10px rgba(96, 165, 250, 0.5);
+        }
+    </style>
 </head>
-<body class="flex flex-col min-h-screen justify-between bg-slate-950 text-slate-100 font-sans antialiased selection:bg-blue-500 selection:text-white">
+<body class="flex flex-col min-h-screen justify-between bg-slate-950 text-slate-100 font-sans antialiased selection:bg-blue-500 selection:text-white overflow-x-hidden">
 
-    <main class="flex-grow flex flex-col items-center px-4 py-16 text-center">
+    <main class="flex-grow flex flex-col items-center px-4 py-16 text-center w-full overflow-hidden">
         
         <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-emerald-500/10 text-emerald-400 text-xs font-medium border border-emerald-500/20 mb-8 animate-pulse">
             <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
@@ -20,14 +57,14 @@
             <img src="https://agoragroup.com.ar/assets/logos/logo-agora.png" alt="Austral Group Logo" class="h-24 mx-auto object-contain drop-shadow-[0_0_25px_rgba(59,130,246,0.4)]" onerror="this.style.display='none'">
         </div>
 
-              
+               
         <p class="text-slate-400 text-base md:text-lg max-w-md mx-auto mb-12 font-light">
             Almacenamiento y distribución global de archivos visuales de alta velocidad.
         </p>
 
-        <section class="max-w-6xl w-full mt-4 border-t border-slate-900 pt-12">
+        <section class="max-w-6xl w-full mt-4 border-t border-slate-900 pt-12 relative">
             <h2 class="text-xl font-bold tracking-wide uppercase text-slate-400 mb-8 flex items-center justify-center gap-2">
-                <i class="fa-solid fa-images text-blue-400"></i> Galería de Archivos
+                <i class="fa-solid fa-layer-group text-blue-400"></i> Archivos Alojados
             </h2>
 
             <div id="loading-state" class="text-slate-500 py-12">
@@ -35,15 +72,24 @@
                 <p class="text-sm">Conectando con el repositorio...</p>
             </div>
 
-            <div id="gallery-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-6 w-full text-left hidden">
-                </div>
+            <div id="gallery-carousel" class="swiper mySwiper hidden">
+                <div class="swiper-wrapper" id="carousel-wrapper">
+                    </div>
+                
+                <div class="swiper-button-next hidden md:flex"></div>
+                <div class="swiper-button-prev hidden md:flex"></div>
+                
+                <div class="swiper-pagination"></div>
+            </div>
         </section>
 
     </main>
 
-    <footer class="w-full text-center py-6 border-t border-slate-900 text-slate-600 text-xs tracking-wider">
+    <footer class="w-full text-center py-6 border-t border-slate-900 text-slate-600 text-xs tracking-wider mt-auto">
         &copy; 2026 Ágora Group. Infraestructura Privada.
     </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
 
     <script>
         // ==========================================
@@ -56,7 +102,8 @@
         const extensions = ['webp', 'jpg', 'jpeg', 'png', 'gif', 'svg', 'ico'];
 
         async function fetchImages() {
-            const grid = document.getElementById('gallery-grid');
+            const carouselContainer = document.getElementById('gallery-carousel');
+            const carouselWrapper = document.getElementById('carousel-wrapper');
             const loading = document.getElementById('loading-state');
 
             try {
@@ -65,7 +112,6 @@
                 
                 const files = await response.json();
                 
-                // Filtrar solo archivos que sean imágenes y excluir el logo
                 const images = files.filter(file => {
                     const ext = file.name.split('.').pop().toLowerCase();
                     return file.type === 'file' && extensions.includes(ext) && file.name !== 'logo.webp';
@@ -77,26 +123,30 @@
                 }
 
                 loading.classList.add('hidden');
-                grid.classList.remove('hidden');
+                carouselContainer.classList.remove('hidden');
 
+                // Inyectar imágenes en el carrusel
                 images.forEach(img => {
                     const imageUrl = `${baseUrl}/${img.name}`;
-                    const card = document.createElement('div');
-                    card.className = "group relative rounded-2xl bg-slate-900/40 border border-slate-900 overflow-hidden hover:border-slate-800 transition-all duration-300 flex flex-col justify-between";
+                    const slide = document.createElement('div');
+                    slide.className = "swiper-slide group relative rounded-2xl bg-slate-900/40 border border-slate-900 overflow-hidden hover:border-blue-500/50 transition-colors duration-300 flex flex-col justify-between h-full";
                     
-                    card.innerHTML = `
-                        <div class="aspect-square w-full bg-slate-950 flex items-center justify-center overflow-hidden border-b border-slate-900/60">
-                            <img src="${imageUrl}" alt="${img.name}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" loading="lazy">
+                    slide.innerHTML = `
+                        <div class="aspect-square w-full bg-slate-950 flex items-center justify-center overflow-hidden border-b border-slate-900/60 p-4">
+                            <img src="${imageUrl}" alt="${img.name}" class="max-w-full max-h-full object-contain group-hover:scale-105 transition-transform duration-500 drop-shadow-md" loading="lazy">
                         </div>
-                        <div class="p-3 bg-slate-900/20 backdrop-blur-sm flex items-center justify-between gap-2">
-                            <span class="text-xs text-slate-400 truncate font-mono" title="${img.name}">${img.name}</span>
-                            <button onclick="copyToClipboard('${imageUrl}', this)" class="p-2 rounded-lg bg-slate-800 hover:bg-blue-600 text-slate-300 hover:text-white transition-colors duration-200 shrink-0 text-xs" title="Copiar URL directa">
+                        <div class="p-3 bg-slate-900/80 backdrop-blur-md flex items-center justify-between gap-2 absolute bottom-0 w-full opacity-0 translate-y-4 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300">
+                            <span class="text-xs text-slate-300 truncate font-mono" title="${img.name}">${img.name}</span>
+                            <button onclick="copyToClipboard('${imageUrl}', this)" class="p-2 rounded-lg bg-blue-600 hover:bg-blue-500 text-white transition-colors duration-200 shrink-0 text-xs shadow-lg shadow-blue-500/30" title="Copiar URL directa">
                                 <i class="fa-regular fa-copy"></i>
                             </button>
                         </div>
                     `;
-                    grid.appendChild(card);
+                    carouselWrapper.appendChild(slide);
                 });
+
+                // Inicializar Swiper DESPUÉS de agregar las imágenes
+                initSwiper();
 
             } catch (error) {
                 console.error(error);
@@ -107,20 +157,54 @@
             }
         }
 
-        // Función para copiar enlaces al portapapeles
+        // Configuración del Carrusel
+        function initSwiper() {
+            new Swiper(".mySwiper", {
+                slidesPerView: 1,
+                spaceBetween: 20,
+                grabCursor: true, // Cursor de "manito" para arrastrar
+                pagination: {
+                    el: ".swiper-pagination",
+                    clickable: true,
+                    dynamicBullets: true,
+                },
+                navigation: {
+                    nextEl: ".swiper-button-next",
+                    prevEl: ".swiper-button-prev",
+                },
+                // Puntos de quiebre para hacer el diseño responsivo (adaptable a pantallas)
+                breakpoints: {
+                    640: {
+                        slidesPerView: 2,
+                        spaceBetween: 20,
+                    },
+                    768: {
+                        slidesPerView: 3,
+                        spaceBetween: 30,
+                    },
+                    1024: {
+                        slidesPerView: 4,
+                        spaceBetween: 30,
+                    },
+                },
+            });
+        }
+
+        // Función para copiar al portapapeles
         function copyToClipboard(text, button) {
             navigator.clipboard.writeText(text).then(() => {
                 const icon = button.querySelector('i');
-                // Cambiar a icono de check verde temporalmente
-                icon.className = 'fa-solid fa-check text-emerald-400';
-                button.classList.add('bg-emerald-500/10');
+                icon.className = 'fa-solid fa-check';
+                button.classList.replace('bg-blue-600', 'bg-emerald-500');
+                button.classList.replace('hover:bg-blue-500', 'hover:bg-emerald-400');
+                button.classList.replace('shadow-blue-500/30', 'shadow-emerald-500/30');
                 
                 setTimeout(() => {
                     icon.className = 'fa-regular fa-copy';
-                    button.classList.remove('bg-emerald-500/10');
+                    button.classList.replace('bg-emerald-500', 'bg-blue-600');
+                    button.classList.replace('hover:bg-emerald-400', 'hover:bg-blue-500');
+                    button.classList.replace('shadow-emerald-500/30', 'shadow-blue-500/30');
                 }, 2000);
-            }).catch(err => {
-                alert('No se pudo copiar el enlace automáticamente');
             });
         }
 
