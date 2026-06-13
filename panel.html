@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ágora Group | Panel de Control de CDN</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Animación suave para los gráficos de anillo */
+        .chart-ring {
+            transition: stroke-dashoffset 1.5s ease-out, stroke 0.5s ease-out;
+        }
+    </style>
+</head>
+<body class="flex flex-col min-h-screen justify-between bg-black text-slate-100 font-sans antialiased selection:bg-blue-500 selection:text-white">
+
+    <main class="flex-grow flex flex-col items-center px-4 py-12 max-w-7xl mx-auto w-full">
+        
+        <header class="w-full text-center mb-16 relative">
+            <div class="mb-4">
+                <img src="https://agoragroup.com.ar/assets/logos/logo-agora.png" alt="Ágora Group Logo" class="h-20 mx-auto object-contain drop-shadow-[0_0_20px_rgba(59,130,246,0.3)]" onerror="this.style.display='none'">
+            </div>
+            <h1 class="text-3xl md:text-4xl font-black tracking-tight bg-gradient-to-r from-blue-400 via-indigo-400 to-purple-500 bg-clip-text text-transparent mb-2">
+                Ágora Group
+            </h1>
+            <p class="text-slate-400 text-sm md:text-base font-light mb-2">
+                Infraestructura de almacenamiento estático y optimización global.
+            </p>
+            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-slate-900/50 border border-slate-800 text-[10px] text-slate-400">
+                <i class="fa-solid fa-clock-rotate-left"></i> Sincronizado: <span id="sync-time">Calculando...</span>
+            </div>
+        </header>
+
+        <section class="w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+            
+            <div class="p-6 rounded-2xl bg-slate-900/40 border border-slate-900 backdrop-blur-sm flex flex-col justify-center items-center text-center h-48 relative overflow-hidden group">
+                <div class="absolute inset-0 bg-gradient-to-br from-emerald-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                <span class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-4 relative z-10">Estado del Nodo</span>
+                <div class="flex items-center gap-3 relative z-10">
+                    <span id="status-dot" class="w-3 h-3 rounded-full bg-slate-600 animate-pulse"></span>
+                    <span id="status-text" class="text-xl font-semibold text-slate-400">Conectando...</span>
+                </div>
+            </div>
+
+            <div class="p-6 rounded-2xl bg-slate-900/40 border border-slate-900 backdrop-blur-sm flex flex-col items-center justify-between h-48">
+                <span class="text-xs font-bold text-slate-500 uppercase tracking-wider w-full text-left">Archivos</span>
+                <div class="relative w-28 h-28 mt-2">
+                    <svg class="w-full h-full transform -rotate-90" viewBox="0 0 100 100">
+                        <circle cx="50" cy="50" r="40" fill="transparent" stroke="#1e293b" stroke-width="8" />
+                        <circle id="chart-images" cx="50" cy="50" r="40" fill="transparent" stroke="#3b82f6" stroke-width="8" stroke-dasharray="251.2" stroke-dashoffset="251.2" stroke-linecap="round" class="chart-ring" />
+                    </svg>
+                    <div class="absolute inset-0 flex flex-col items-center justify-center">
+                        <span id="metric-count" class="text-xl font-black text-slate-200 leading-none">--</span>
+                        <span class="text-[10px] text-slate-500 mt-1">/ 5000</span>
+                    </div>
+                </div>
+            </div>
+
+            <div id="storage-card" class="p-6 rounded-2xl bg-slate-900/40 border border-slate-900 backdrop-blur-sm flex flex-col items-center justify-between h-48 cursor-help transition-colors hover:border-slate-800" title="Calculando bytes exactos...">
+                <div class="w-full flex justify-between items-center text-left">
+                    <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Almacenamiento</span>
+                    <i class="fa-solid fa-circle-info text-slate-600 text-xs"></i>
+                </div>
+                <div class="relative w-28 h-28 mt-2">
+                    <svg class="w-full h-full transform -rotate-90" viewBox="0 0 100 100">
+                        <circle cx="50" cy="50" r="40" fill="transparent" stroke="#1e293b" stroke-width="8" />
+                        <circle id="chart-storage" cx="50" cy="50" r="40" fill="transparent" stroke="#818cf8" stroke-width="8" stroke-dasharray="251.2" stroke-dashoffset="251.2" stroke-linecap="round" class="chart-ring" />
+                    </svg>
+                    <div class="absolute inset-0 flex flex-col items-center justify-center">
+                        <span id="metric-size" class="text-xl font-black text-slate-200 leading-none">--</span>
+                        <span class="text-[10px] text-slate-500 mt-1">/ 1024 MB</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="p-6 rounded-2xl bg-slate-900/40 border border-slate-900 backdrop-blur-sm flex flex-col justify-center items-center text-center h-48">
+                <span class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Peso Promedio</span>
+                <span id="metric-avg" class="text-4xl font-black text-purple-400 mt-1">--</span>
+                <span class="text-sm text-slate-500 mt-1">Kilobytes / Archivo</span>
+            </div>
+
+        </section>
+
+        <section class="w-full grid grid-cols-1 lg:grid-cols-2 gap-6 mb-12">
+            
+            <div class="p-6 rounded-2xl bg-slate-900/40 border border-slate-900 backdrop-blur-sm flex flex-col h-full">
+                <span class="text-xs font-bold text-slate-500 uppercase tracking-wider w-full text-left mb-6">
+                    <i class="fa-solid fa-chart-simple text-blue-400 mr-2"></i>Distribución de Formatos
+                </span>
+                <div id="format-bars" class="flex flex-col gap-4 flex-grow justify-center">
+                    <div class="text-center text-slate-600 text-sm py-4"><i class="fa-solid fa-spinner animate-spin"></i> Analizando extensiones...</div>
+                </div>
+            </div>
+
+            <div class="p-6 rounded-2xl bg-slate-900/40 border border-slate-900 backdrop-blur-sm flex flex-col h-full">
+                <span class="text-xs font-bold text-slate-500 uppercase tracking-wider w-full text-left mb-6">
+                    <i class="fa-solid fa-weight-hanging text-indigo-400 mr-2"></i>Requieren Optimización (Top 3)
+                </span>
+                <div id="top-files" class="flex flex-col gap-3 flex-grow justify-center">
+                    <div class="text-center text-slate-600 text-sm py-4"><i class="fa-solid fa-spinner animate-spin"></i> Buscando archivos...</div>
+                </div>
+            </div>
+
+        </section>
+
+    </main>
+
+    <footer class="w-full text-center py-6 border-t border-slate-900 text-slate-600 text-xs tracking-wider">
+        &copy; 2026 Ágora Group. Panel de Administración Privado.
+    </footer>
+
+    <script>
+        // ==========================================
+        const GITHUB_USER = 'AustralGroupSA';
+        const GITHUB_REPO = 'imagenes';
+        // ==========================================
+
+        const extensions = ['webp', 'jpg', 'jpeg', 'png', 'gif', 'svg', 'ico'];
+        const CIRCUMFERENCE = 251.2;
+
+        // Función para definir colores de alerta
+        function getStatusColor(percentage, defaultColor) {
+            if (percentage >= 0.90) return '#ef4444'; // Rojo (Peligro > 90%)
+            if (percentage >= 0.70) return '#eab308'; // Amarillo (Alerta > 70%)
+            return defaultColor; // Color normal
+        }
+
+        async function initDashboard() {
+            // Referencias DOM principales
+            const statusDot = document.getElementById('status-dot');
+            const statusText = document.getElementById('status-text');
+            const metricCount = document.getElementById('metric-count');
+            const metricSize = document.getElementById('metric-size');
+            const metricAvg = document.getElementById('metric-avg');
+            const chartImages = document.getElementById('chart-images');
+            const chartStorage = document.getElementById('chart-storage');
+            const storageCard = document.getElementById('storage-card');
+            
+            // Referencias DOM nuevas
+            const syncTime = document.getElementById('sync-time');
+            const formatBars = document.getElementById('format-bars');
+            const topFilesContainer = document.getElementById('top-files');
+
+            try {
+                // 1. Obtener archivos
+                const response = await fetch(`https://api.github.com/repos/${GITHUB_USER}/${GITHUB_REPO}/contents/`);
+                if (!response.ok) throw new Error('Error de conexión con GitHub');
+                const files = await response.json();
+                
+                // 2. Obtener último commit (Última sincronización)
+                fetch(`https://api.github.com/repos/${GITHUB_USER}/${GITHUB_REPO}/commits?per_page=1`)
+                    .then(res => res.json())
+                    .then(data => {
+                        if(data && data.length > 0) {
+                            const date = new Date(data[0].commit.author.date);
+                            // Formato local (ej: 13/6/2026, 11:45)
+                            syncTime.innerText = date.toLocaleString('es-AR', { dateStyle: 'short', timeStyle: 'short' });
+                        } else {
+                            syncTime.innerText = "Desconocido";
+                        }
+                    }).catch(() => syncTime.innerText = "Error al leer fecha");
+
+                // Filtrar solo las imágenes
+                const images = files.filter(file => {
+                    const ext = file.name.split('.').pop().toLowerCase();
+                    return file.type === 'file' && extensions.includes(ext) && file.name !== 'logo.webp';
+                });
+
+                // ESTADO ONLINE
+                statusDot.className = "w-3 h-3 rounded-full bg-emerald-400 shadow-[0_0_12px_#34d399]";
+                statusText.innerText = "Online";
+                statusText.className = "text-xl font-semibold text-emerald-400";
+
+                if (images.length === 0) {
+                    metricCount.innerText = "0"; metricSize.innerText = "0.00"; metricAvg.innerText = "0.00";
+                    formatBars.innerHTML = "<p class='text-slate-500 text-xs text-center'>No hay datos</p>";
+                    topFilesContainer.innerHTML = "<p class='text-slate-500 text-xs text-center'>No hay datos</p>";
+                    return;
+                }
+
+                // CÁLCULOS PRINCIPALES
+                let totalBytes = 0;
+                let formatsCount = {};
+                
+                images.forEach(img => {
+                    totalBytes += img.size;
+                    const ext = img.name.split('.').pop().toLowerCase();
+                    formatsCount[ext] = (formatsCount[ext] || 0) + 1;
+                });
+
+                const totalMB = (totalBytes / (1024 * 1024)).toFixed(2);
+                const avgKB = ((totalBytes / 1024) / images.length).toFixed(1);
+
+                // ACTUALIZAR TEXTOS
+                metricCount.innerText = images.length;
+                metricSize.innerText = totalMB;
+                metricAvg.innerText = avgKB;
+                
+                // Tooltip Hover de Bytes
+                storageCard.title = `Uso exacto: ${totalBytes.toLocaleString()} Bytes`;
+
+                // ANIMAR GRÁFICOS Y COLORES DE ALERTA
+                const imgPercentage = Math.min(images.length / 5000, 1);
+                const storagePercentage = Math.min(totalMB / 1024, 1);
+
+                setTimeout(() => {
+                    chartImages.style.strokeDashoffset = CIRCUMFERENCE - (imgPercentage * CIRCUMFERENCE);
+                    chartImages.style.stroke = getStatusColor(imgPercentage, '#3b82f6'); // Base azul
+                    
+                    chartStorage.style.strokeDashoffset = CIRCUMFERENCE - (storagePercentage * CIRCUMFERENCE);
+                    chartStorage.style.stroke = getStatusColor(storagePercentage, '#818cf8'); // Base indigo
+                }, 100);
+
+                // RENDERIZAR DISTRIBUCIÓN DE FORMATOS
+                formatBars.innerHTML = '';
+                // Ordenar formatos por cantidad
+                const sortedFormats = Object.entries(formatsCount).sort((a, b) => b[1] - a[1]);
+                
+                sortedFormats.forEach(([ext, count]) => {
+                    const perc = ((count / images.length) * 100).toFixed(1);
+                    formatBars.innerHTML += `
+                        <div class="w-full">
+                            <div class="flex justify-between text-xs mb-1">
+                                <span class="text-slate-300 font-mono uppercase">${ext}</span>
+                                <span class="text-slate-500">${count} arch. <span class="text-slate-400 ml-1">(${perc}%)</span></span>
+                            </div>
+                            <div class="w-full bg-slate-900 rounded-full h-1.5 overflow-hidden">
+                                <div class="bg-blue-500 h-1.5 rounded-full" style="width: ${perc}%"></div>
+                            </div>
+                        </div>
+                    `;
+                });
+
+                // RENDERIZAR TOP 3 MÁS PESADOS
+                topFilesContainer.innerHTML = '';
+                // Ordenar imágenes por tamaño (de mayor a menor) y cortar en 3
+                const topFiles = [...images].sort((a, b) => b.size - a.size).slice(0, 3);
+                
+                topFiles.forEach((file, index) => {
+                    const kbSize = (file.size / 1024).toFixed(1);
+                    // Colores de ranking
+                    const rankColors = ['text-yellow-400', 'text-slate-300', 'text-amber-600'];
+                    const color = rankColors[index] || 'text-slate-500';
+
+                    topFilesContainer.innerHTML += `
+                        <div class="flex items-center justify-between p-3 rounded-lg bg-slate-900/50 border border-slate-800/50">
+                            <div class="flex items-center gap-3 overflow-hidden">
+                                <span class="font-black ${color} text-sm w-4">${index + 1}</span>
+                                <span class="text-xs text-slate-300 truncate font-mono" title="${file.name}">${file.name}</span>
+                            </div>
+                            <span class="text-xs font-semibold text-rose-400 ml-2 whitespace-nowrap">${kbSize} KB</span>
+                        </div>
+                    `;
+                });
+
+            } catch (error) {
+                console.error(error);
+                statusDot.className = "w-3 h-3 rounded-full bg-red-500 shadow-[0_0_12px_#ef4444]";
+                statusText.innerText = "Offline";
+                statusText.className = "text-xl font-semibold text-red-400";
+                
+                metricCount.innerText = "ERR"; metricSize.innerText = "ERR"; metricAvg.innerText = "ERR";
+                formatBars.innerHTML = "<p class='text-red-400 text-xs text-center'>Error al cargar</p>";
+                topFilesContainer.innerHTML = "<p class='text-red-400 text-xs text-center'>Error al cargar</p>";
+            }
+        }
+
+        // Ejecutar al cargar la web
+        initDashboard();
+    </script>
+</body>
+</html>
