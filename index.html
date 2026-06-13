@@ -12,6 +12,28 @@
             transition: stroke-dashoffset 1.5s ease-out, stroke 0.5s ease-out;
         }
     </style>
+    <script>
+    // ==========================================
+    // 🔒 SISTEMA DE SEGURIDAD BÁSICO
+    // ==========================================
+    const claveCorrecta = "agora2026"; // <-- CAMBIA ESTA CONTRASEÑA
+    
+    // Preguntar la clave al usuario
+    const intento = prompt("🔒 Acceso Restringido - Ágora Group\n\nPor favor, ingrese la contraseña de administrador:");
+    
+    // Si cancela o la clave es incorrecta, borramos toda la página
+    if (intento !== claveCorrecta) {
+        document.documentElement.innerHTML = `
+            <body style='background-color: #000; color: #ef4444; display: flex; justify-content: center; align-items: center; height: 100vh; font-family: sans-serif; margin: 0;'>
+                <div style='text-align: center;'>
+                    <h1 style='font-size: 2rem; margin-bottom: 0.5rem;'>Acceso Denegado</h1>
+                    <p style='color: #64748b; font-size: 0.875rem;'>No tienes los permisos necesarios para ver esta infraestructura.</p>
+                </div>
+            </body>
+        `;
+        window.stop(); // Detiene la carga de cualquier otro script
+    }
+</script>
 </head>
 <body class="flex flex-col min-h-screen justify-between bg-black text-slate-100 font-sans antialiased selection:bg-blue-500 selection:text-white">
 
